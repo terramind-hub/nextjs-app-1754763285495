@@ -35,8 +35,8 @@ export function formatDateTime(date: Date | string): string {
  * Format duration in minutes to human readable format
  */
 export function formatDuration(minutes: number): string {
-  if (minutes < 60) {
-    return `${minutes}m`
+  if (!minutes || minutes < 60) {
+    return `${minutes || 0}m`
   }
   const hours = Math.floor(minutes / 60)
   const remainingMinutes = minutes % 60
@@ -136,9 +136,12 @@ export function getMonthStart(date: Date = new Date()): Date {
 }
 
 /**
- * Format number with commas
+ * Format number with commas - handles undefined/null values
  */
-export function formatNumber(num: number): string {
+export function formatNumber(num: number | undefined | null): string {
+  if (num === undefined || num === null || isNaN(num)) {
+    return '0'
+  }
   return num.toLocaleString()
 }
 
