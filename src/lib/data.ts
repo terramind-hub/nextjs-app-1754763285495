@@ -149,11 +149,12 @@ export const workoutsData = [
   {
     id: generateId(),
     name: 'Morning Cardio',
-    date: new Date('2024-01-15'),
+    date: '2024-01-15',
     duration: 30,
     exercises: [
       {
         exerciseId: exercisesData[0].id,
+        category: 'Cardio',
         sets: 1,
         reps: null,
         weight: null,
@@ -163,6 +164,7 @@ export const workoutsData = [
       },
       {
         exerciseId: exercisesData[2].id,
+        category: 'Cardio',
         sets: 3,
         reps: 50,
         weight: null,
@@ -171,17 +173,19 @@ export const workoutsData = [
         calories: 120
       }
     ],
+    caloriesBurned: 370,
     totalCalories: 370,
     notes: 'Great morning workout, felt energized'
   },
   {
     id: generateId(),
     name: 'Strength Training',
-    date: new Date('2024-01-14'),
+    date: '2024-01-14',
     duration: 45,
     exercises: [
       {
         exerciseId: exercisesData[3].id,
+        category: 'Strength',
         sets: 3,
         reps: 15,
         weight: null,
@@ -191,6 +195,7 @@ export const workoutsData = [
       },
       {
         exerciseId: exercisesData[4].id,
+        category: 'Strength',
         sets: 3,
         reps: 12,
         weight: null,
@@ -200,6 +205,7 @@ export const workoutsData = [
       },
       {
         exerciseId: exercisesData[5].id,
+        category: 'Strength',
         sets: 3,
         reps: 8,
         weight: 135,
@@ -208,17 +214,19 @@ export const workoutsData = [
         calories: 150
       }
     ],
+    caloriesBurned: 320,
     totalCalories: 320,
     notes: 'Increased weight on deadlifts'
   },
   {
     id: generateId(),
     name: 'Yoga Flow',
-    date: new Date('2024-01-13'),
+    date: '2024-01-13',
     duration: 60,
     exercises: [
       {
         exerciseId: exercisesData[6].id,
+        category: 'Flexibility',
         sets: 1,
         reps: null,
         weight: null,
@@ -228,6 +236,7 @@ export const workoutsData = [
       },
       {
         exerciseId: exercisesData[7].id,
+        category: 'Flexibility',
         sets: 1,
         reps: null,
         weight: null,
@@ -236,6 +245,7 @@ export const workoutsData = [
         calories: 80
       }
     ],
+    caloriesBurned: 180,
     totalCalories: 180,
     notes: 'Relaxing evening session'
   }
@@ -251,8 +261,9 @@ export const goalsData = [
     targetValue: 5,
     currentValue: 3.2,
     unit: 'km',
-    targetDate: new Date('2024-03-01'),
-    createdDate: new Date('2024-01-01'),
+    targetDate: '2024-03-01',
+    createdDate: '2024-01-01',
+    status: 'active',
     isCompleted: false,
     priority: 'High'
   },
@@ -264,8 +275,9 @@ export const goalsData = [
     targetValue: 10,
     currentValue: 4,
     unit: 'lbs',
-    targetDate: new Date('2024-04-01'),
-    createdDate: new Date('2024-01-01'),
+    targetDate: '2024-04-01',
+    createdDate: '2024-01-01',
+    status: 'active',
     isCompleted: false,
     priority: 'High'
   },
@@ -277,8 +289,9 @@ export const goalsData = [
     targetValue: 16,
     currentValue: 12,
     unit: 'workouts',
-    targetDate: new Date('2024-02-01'),
-    createdDate: new Date('2024-01-01'),
+    targetDate: '2024-02-01',
+    createdDate: '2024-01-01',
+    status: 'active',
     isCompleted: false,
     priority: 'Medium'
   },
@@ -290,42 +303,97 @@ export const goalsData = [
     targetValue: 1,
     currentValue: 0.7,
     unit: 'achievement',
-    targetDate: new Date('2024-06-01'),
-    createdDate: new Date('2024-01-01'),
+    targetDate: '2024-06-01',
+    createdDate: '2024-01-01',
+    status: 'active',
     isCompleted: false,
     priority: 'Low'
   }
 ];
 
-// Sample progress data for charts
-export const progressData = {
-  weight: [
-    { date: '2024-01-01', value: 180 },
-    { date: '2024-01-08', value: 179 },
-    { date: '2024-01-15', value: 178 },
-    { date: '2024-01-22', value: 176 },
-    { date: '2024-01-29', value: 175 }
-  ],
-  workouts: [
-    { date: '2024-01-01', value: 0 },
-    { date: '2024-01-08', value: 3 },
-    { date: '2024-01-15', value: 7 },
-    { date: '2024-01-22', value: 11 },
-    { date: '2024-01-29', value: 15 }
-  ],
-  calories: [
-    { date: '2024-01-01', value: 0 },
-    { date: '2024-01-08', value: 1200 },
-    { date: '2024-01-15', value: 2800 },
-    { date: '2024-01-22', value: 4200 },
-    { date: '2024-01-29', value: 5800 }
-  ],
-  strength: [
-    { exercise: 'Push-ups', week1: 10, week2: 12, week3: 15, week4: 18 },
-    { exercise: 'Squats', week1: 15, week2: 18, week3: 20, week4: 25 },
-    { exercise: 'Deadlifts', week1: 95, week2: 115, week3: 125, week4: 135 }
-  ]
-};
+// Sample progress data - now as an array for charts
+export const progressData = [
+  {
+    id: generateId(),
+    date: '2024-01-01',
+    weight: 180,
+    bodyFat: 18.5,
+    muscle: 35.2,
+    muscleMass: 35.2,
+    measurements: {
+      chest: 95,
+      waist: 82,
+      hips: 96,
+      biceps: 32,
+      thighs: 55
+    },
+    notes: 'Starting measurements'
+  },
+  {
+    id: generateId(),
+    date: '2024-01-08',
+    weight: 179,
+    bodyFat: 18.2,
+    muscle: 35.4,
+    muscleMass: 35.4,
+    measurements: {
+      chest: 95.5,
+      waist: 81.5,
+      hips: 96,
+      biceps: 32.2,
+      thighs: 55.2
+    },
+    notes: 'Good progress this week'
+  },
+  {
+    id: generateId(),
+    date: '2024-01-15',
+    weight: 178,
+    bodyFat: 17.8,
+    muscle: 35.8,
+    muscleMass: 35.8,
+    measurements: {
+      chest: 96,
+      waist: 81,
+      hips: 95.5,
+      biceps: 32.5,
+      thighs: 55.5
+    },
+    notes: 'Feeling stronger'
+  },
+  {
+    id: generateId(),
+    date: '2024-01-22',
+    weight: 176,
+    bodyFat: 17.5,
+    muscle: 36.2,
+    muscleMass: 36.2,
+    measurements: {
+      chest: 96.5,
+      waist: 80.5,
+      hips: 95,
+      biceps: 33,
+      thighs: 56
+    },
+    notes: 'Great results'
+  },
+  {
+    id: generateId(),
+    date: '2024-01-29',
+    weight: 175,
+    bodyFat: 17.2,
+    muscle: 36.5,
+    muscleMass: 36.5,
+    measurements: {
+      chest: 97,
+      waist: 80,
+      hips: 94.5,
+      biceps: 33.2,
+      thighs: 56.2
+    },
+    notes: 'Excellent progress'
+  }
+];
 
 // User profile data
 export const userProfileData = {
@@ -354,21 +422,21 @@ export const userProfileData = {
       id: generateId(),
       title: 'First Workout',
       description: 'Completed your first workout',
-      earnedDate: new Date('2024-01-01'),
+      earnedDate: '2024-01-01',
       icon: '🏃'
     },
     {
       id: generateId(),
       title: 'Week Warrior',
       description: 'Worked out 7 days in a row',
-      earnedDate: new Date('2024-01-15'),
+      earnedDate: '2024-01-15',
       icon: '🔥'
     },
     {
       id: generateId(),
       title: 'Calorie Crusher',
       description: 'Burned 1000+ calories in a week',
-      earnedDate: new Date('2024-01-08'),
+      earnedDate: '2024-01-08',
       icon: '⚡'
     }
   ]
@@ -473,7 +541,7 @@ export const getExercisesByCategory = (category: ExerciseCategory) => {
 
 export const getWorkoutsByDateRange = (startDate: Date, endDate: Date) => {
   return workoutsData.filter(workout => 
-    workout.date >= startDate && workout.date <= endDate
+    new Date(workout.date) >= startDate && new Date(workout.date) <= endDate
   );
 };
 
@@ -486,7 +554,7 @@ export const getCompletedGoals = () => {
 };
 
 export const getTotalCaloriesBurned = () => {
-  return workoutsData.reduce((total, workout) => total + workout.totalCalories, 0);
+  return workoutsData.reduce((total, workout) => total + (workout.caloriesBurned || workout.totalCalories || 0), 0);
 };
 
 export const getAverageWorkoutDuration = () => {

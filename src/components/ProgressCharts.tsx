@@ -13,6 +13,7 @@ import { TrendingUp, Calendar, Target, Activity, Flame, Clock, Award, BarChart3 
 
 interface ProgressChartsProps {
   className?: string;
+  timeframe?: string;
 }
 
 interface ChartDataPoint {
@@ -32,12 +33,56 @@ interface WorkoutTypeData {
   color: string;
 }
 
-export default function ProgressCharts({ className }: ProgressChartsProps) {
+export default function ProgressCharts({ className, timeframe }: ProgressChartsProps) {
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
   const [selectedMetric, setSelectedMetric] = useState<'weight' | 'bodyFat' | 'muscle'>('weight');
 
+  // Ensure progressData is an array and handle the data structure properly
+  const progressDataArray = useMemo(() => {
+    // Handle case where progressData might be an object with nested arrays
+    if (!progressData) return [];
+    
+    // If progressData is an object with weight, workouts, etc. properties
+    if (typeof progressData === 'object' && !Array.isArray(progressData)) {
+      // Convert the object structure to array format for charts
+      const weightData = progressData.weight || [];
+      const workoutData = progressData.workouts || [];
+      const calorieData = progressData.calories || [];
+      
+      // Create a combined dataset
+      const combinedData: ChartDataPoint[] = [];
+      
+      // Use weight data as the base since it has body metrics
+      weightData.forEach((entry: any) => {
+        const workoutEntry = workoutData.find((w: any) => w.date === entry.date);
+        const calorieEntry = calorieData.find((c: any) => c.date === entry.date);
+        
+        combinedData.push({
+          date: entry.date,
+          weight: entry.value,
+          bodyFat: 15 + Math.random() * 5, // Mock data for demo
+          muscle: 35 + Math.random() * 5, // Mock data for demo
+          workouts: workoutEntry?.value || 0,
+          calories: calorieEntry?.value || 0,
+          duration: (workoutEntry?.value || 0) * 45 // Estimate duration
+        });
+      });
+      
+      return combinedData;
+    }
+    
+    // If it's already an array, use it directly
+    if (Array.isArray(progressData)) {
+      return progressData;
+    }
+    
+    return [];
+  }, []);
+
   // Process progress data for charts
   const chartData = useMemo(() => {
+    if (!progressDataArray || progressDataArray.length === 0) return [];
+    
     const now = new Date();
     let startDate: Date;
 
@@ -59,17 +104,19 @@ export default function ProgressCharts({ className }: ProgressChartsProps) {
     }
 
     // Filter progress data by time range
-    const filteredProgress = progressData.filter(entry => {
+    const filteredProgress = progressDataArray.filter(entry => {
       const entryDate = new Date(entry.date);
       return entryDate >= startDate && entryDate <= now;
     });
 
     // Sort by date
     return filteredProgress.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [timeRange]);
+  }, [timeRange, progressDataArray]);
 
   // Process workout data for activity charts
   const workoutChartData = useMemo(() => {
+    if (!workoutsData || !Array.isArray(workoutsData)) return [];
+    
     const now = new Date();
     let startDate: Date;
 
@@ -101,8 +148,8 @@ export default function ProgressCharts({ className }: ProgressChartsProps) {
           workoutsByDate[dateKey] = { count: 0, calories: 0, duration: 0 };
         }
         workoutsByDate[dateKey].count += 1;
-        workoutsByDate[dateKey].calories += workout.caloriesBurned;
-        workoutsByDate[dateKey].duration += workout.duration;
+        workoutsByDate[dateKey].calories += workout.caloriesBurned || workout.totalCalories || 0;
+        workoutsByDate[dateKey].duration += workout.duration || 0;
       }
     });
 
@@ -119,13 +166,18 @@ export default function ProgressCharts({ className }: ProgressChartsProps) {
 
   // Process workout type distribution
   const workoutTypeData = useMemo(() => {
+    if (!workoutsData || !Array.isArray(workoutsData)) return [];
+    
     const typeCount: { [key: string]: number } = {};
     const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1'];
 
     workoutsData.forEach(workout => {
-      workout.exercises.forEach(exercise => {
-        typeCount[exercise.category] = (typeCount[exercise.category] || 0) + 1;
-      });
+      if (workout.exercises && Array.isArray(workout.exercises)) {
+        workout.exercises.forEach(exercise => {
+          const category = exercise.category || 'Other';
+          typeCount[category] = (typeCount[category] || 0) + 1;
+        });
+      }
     });
 
     return Object.entries(typeCount)
@@ -139,28 +191,28 @@ export default function ProgressCharts({ className }: ProgressChartsProps) {
 
   // Calculate progress statistics
   const progressStats = useMemo(() => {
-    if (chartData.length < 2) return null;
+    if (!chartData || chartData.length < 2) return null;
 
     const latest = chartData[chartData.length - 1];
     const previous = chartData[chartData.length - 2];
 
-    const weightChange = latest.weight - previous.weight;
-    const bodyFatChange = latest.bodyFat - previous.bodyFat;
-    const muscleChange = latest.muscle - previous.muscle;
+    const weightChange = (latest.weight || 0) - (previous.weight || 0);
+    const bodyFatChange = (latest.bodyFat || 0) - (previous.bodyFat || 0);
+    const muscleChange = (latest.muscle || 0) - (previous.muscle || 0);
 
     return {
       weight: {
-        current: latest.weight,
+        current: latest.weight || 0,
         change: weightChange,
         trend: weightChange > 0 ? 'up' : weightChange < 0 ? 'down' : 'stable'
       },
       bodyFat: {
-        current: latest.bodyFat,
+        current: latest.bodyFat || 0,
         change: bodyFatChange,
         trend: bodyFatChange > 0 ? 'up' : bodyFatChange < 0 ? 'down' : 'stable'
       },
       muscle: {
-        current: latest.muscle,
+        current: latest.muscle || 0,
         change: muscleChange,
         trend: muscleChange > 0 ? 'up' : muscleChange < 0 ? 'down' : 'stable'
       }
@@ -513,7 +565,7 @@ export default function ProgressCharts({ className }: ProgressChartsProps) {
                           {type.value} exercises
                         </Badge>
                         <span className="text-sm text-muted-foreground">
-                          {((type.value / workoutTypeData.reduce((sum, t) => sum + t.value, 0)) * 100).toFixed(1)}%
+                          {workoutTypeData.length > 0 ? ((type.value / workoutTypeData.reduce((sum, t) => sum + t.value, 0)) * 100).toFixed(1) : '0'}%
                         </span>
                       </div>
                     </div>
